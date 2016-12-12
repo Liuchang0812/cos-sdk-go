@@ -31,14 +31,12 @@ func TestChainProviderWithNames(t *testing.T) {
 				creds: Value{
 					AccessKeyID:     "AKIF",
 					SecretAccessKey: "NOSECRET",
-					SessionToken:    "",
 				},
 			},
 			&stubProvider{
 				creds: Value{
 					AccessKeyID:     "AKID",
 					SecretAccessKey: "SECRET",
-					SessionToken:    "",
 				},
 			},
 		},
@@ -51,7 +49,6 @@ func TestChainProviderWithNames(t *testing.T) {
 	// Also check credentials
 	assert.Equal(t, "AKIF", creds.AccessKeyID, "Expect access key ID to match")
 	assert.Equal(t, "NOSECRET", creds.SecretAccessKey, "Expect secret access key to match")
-	assert.Empty(t, creds.SessionToken, "Expect session token to be empty")
 
 }
 
@@ -64,7 +61,6 @@ func TestChainProviderGet(t *testing.T) {
 				creds: Value{
 					AccessKeyID:     "AKID",
 					SecretAccessKey: "SECRET",
-					SessionToken:    "",
 				},
 			},
 		},
@@ -74,7 +70,6 @@ func TestChainProviderGet(t *testing.T) {
 	assert.Nil(t, err, "Expect no error")
 	assert.Equal(t, "AKID", creds.AccessKeyID, "Expect access key ID to match")
 	assert.Equal(t, "SECRET", creds.SecretAccessKey, "Expect secret access key to match")
-	assert.Empty(t, creds.SessionToken, "Expect session token to be empty")
 }
 
 func TestChainProviderIsExpired(t *testing.T) {

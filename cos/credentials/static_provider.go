@@ -22,11 +22,11 @@ type StaticProvider struct {
 
 // NewStaticCredentials returns a pointer to a new Credentials object
 // wrapping a static credentials value provider.
-func NewStaticCredentials(id, secret, token string) *Credentials {
+func NewStaticCredentials(id, secret, appid string) *Credentials {
 	return NewCredentials(&StaticProvider{Value: Value{
 		AccessKeyID:     id,
 		SecretAccessKey: secret,
-		SessionToken:    token,
+        AppID:           appid,
 	}})
 }
 

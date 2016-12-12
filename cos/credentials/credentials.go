@@ -58,10 +58,10 @@ import (
 //
 // This Credentials can be used to configure a service to not sign requests
 // when making service API calls. For example, when accessing public
-// s3 buckets.
+// COS buckets.
 //
-//     svc := s3.New(&aws.Config{Credentials: AnonymousCredentials})
-//     // Access public S3 buckets.
+//     svc := cos.New(&cos.Config{Credentials: AnonymousCredentials})
+//     // Access public COS buckets.
 //
 // @readonly
 var AnonymousCredentials = NewStaticCredentials("", "", "")
@@ -75,10 +75,10 @@ type Value struct {
 	SecretAccessKey string
 
 	// COS APPID
-	Appid string
+	AppID string
 
-	// COS Session Token
-	SessionToken string
+	// COS Session Token, No need this currently
+	// SessionToken string
 
 	// Provider used to get credentials
 	ProviderName string

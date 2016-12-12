@@ -10,17 +10,19 @@ import (
 const EnvProviderName = "EnvProvider"
 
 var (
-	// ErrAccessKeyIDNotFound is returned when the AWS Access Key ID can't be
+	// ErrAccessKeyIDNotFound is returned when the COS Access Key ID can't be
 	// found in the process's environment.
 	//
 	// @readonly
-	ErrAccessKeyIDNotFound = coserr.New("EnvAccessKeyNotFound", "AWS_ACCESS_KEY_ID or AWS_ACCESS_KEY not found in environment", nil)
+	ErrAccessKeyIDNotFound = coserr.New("EnvAccessKeyNotFound", "COS_ACCESS_KEY_ID or COS_ACCESS_KEY not found in environment", nil)
 
-	// ErrSecretAccessKeyNotFound is returned when the AWS Secret Access Key
+	// ErrSecretAccessKeyNotFound is returned when the COS Secret Access Key
 	// can't be found in the process's environment.
 	//
 	// @readonly
-	ErrSecretAccessKeyNotFound = coserr.New("EnvSecretNotFound", "AWS_SECRET_ACCESS_KEY or AWS_SECRET_KEY not found in environment", nil)
+	ErrSecretAccessKeyNotFound = coserr.New("EnvSecretNotFound", "COS_SECRET_ACCESS_KEY or COS_SECRET_KEY not found in environment", nil)
+
+    ErrAppIDNotFount = coserr.New("AppIDNotFound", "COS_APPID not found in environment", nil)
 )
 
 // A EnvProvider retrieves credentials from the environment variables of the
@@ -28,8 +30,9 @@ var (
 //
 // Environment variables used:
 //
-// * Access Key ID:     AWS_ACCESS_KEY_ID or AWS_ACCESS_KEY
-// * Secret Access Key: AWS_SECRET_ACCESS_KEY or AWS_SECRET_KEY
+// * Access Key ID:     COS_ACCESS_KEY_ID or COS_ACCESS_KEY
+// * Secret Access Key: COS_SECRET_ACCESS_KEY or COS_SECRET_KEY
+// * Application ID:    COS_APPID
 type EnvProvider struct {
 	retrieved bool
 }
@@ -44,15 +47,17 @@ func NewEnvCredentials() *Credentials {
 func (e *EnvProvider) Retrieve() (Value, error) {
 	e.retrieved = false
 
-	id := os.Getenv("AWS_ACCESS_KEY_ID")
+	id := os.Getenv("COS_ACCESS_KEY_ID")
 	if id == "" {
-		id = os.Getenv("AWS_ACCESS_KEY")
+		id = os.Getenv("COS_ACCESS_KEY")
 	}
 
-	secret := os.Getenv("AWS_SECRET_ACCESS_KEY")
+	secret := os.Getenv("COS_SECRET_ACCESS_KEY")
 	if secret == "" {
-		secret = os.Getenv("AWS_SECRET_KEY")
+		secret = os.Getenv("COS_SECRET_KEY")
 	}
+
+    appid := os.Getenv("COS_APPID")
 
 	if id == "" {
 		return Value{ProviderName: EnvProviderName}, ErrAccessKeyIDNotFound
@@ -62,11 +67,15 @@ func (e *EnvProvider) Retrieve() (Value, error) {
 		return Value{ProviderName: EnvProviderName}, ErrSecretAccessKeyNotFound
 	}
 
+    if appid == "" {
+        return Value{ProviderName: EnvProviderName}, ErrAppIDNotFount
+    }
+
 	e.retrieved = true
 	return Value{
 		AccessKeyID:     id,
 		SecretAccessKey: secret,
-		SessionToken:    os.Getenv("AWS_SESSION_TOKEN"),
+        AppID:           appid,
 		ProviderName:    EnvProviderName,
 	}, nil
 }

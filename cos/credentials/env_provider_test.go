@@ -8,9 +8,9 @@ import (
 
 func TestEnvProviderRetrieve(t *testing.T) {
 	os.Clearenv()
-	os.Setenv("AWS_ACCESS_KEY_ID", "access")
-	os.Setenv("AWS_SECRET_ACCESS_KEY", "secret")
-	os.Setenv("AWS_SESSION_TOKEN", "token")
+	os.Setenv("COS_ACCESS_KEY_ID", "access")
+	os.Setenv("COS_SECRET_ACCESS_KEY", "secret")
+    os.Setenv("COS_APPID", "appid")
 
 	e := EnvProvider{}
 	creds, err := e.Retrieve()
@@ -18,14 +18,14 @@ func TestEnvProviderRetrieve(t *testing.T) {
 
 	assert.Equal(t, "access", creds.AccessKeyID, "Expect access key ID to match")
 	assert.Equal(t, "secret", creds.SecretAccessKey, "Expect secret access key to match")
-	assert.Equal(t, "token", creds.SessionToken, "Expect session token to match")
+    assert.Equal(t, "appid", creds.AppID, "Expect application id to match")
 }
 
 func TestEnvProviderIsExpired(t *testing.T) {
 	os.Clearenv()
-	os.Setenv("AWS_ACCESS_KEY_ID", "access")
-	os.Setenv("AWS_SECRET_ACCESS_KEY", "secret")
-	os.Setenv("AWS_SESSION_TOKEN", "token")
+	os.Setenv("COS_ACCESS_KEY_ID", "access")
+	os.Setenv("COS_SECRET_ACCESS_KEY", "secret")
+    os.Setenv("COS_APPID", "appid")
 
 	e := EnvProvider{}
 
@@ -39,7 +39,7 @@ func TestEnvProviderIsExpired(t *testing.T) {
 
 func TestEnvProviderNoAccessKeyID(t *testing.T) {
 	os.Clearenv()
-	os.Setenv("AWS_SECRET_ACCESS_KEY", "secret")
+	os.Setenv("COS_SECRET_ACCESS_KEY", "secret")
 
 	e := EnvProvider{}
 	creds, err := e.Retrieve()
@@ -48,7 +48,7 @@ func TestEnvProviderNoAccessKeyID(t *testing.T) {
 
 func TestEnvProviderNoSecretAccessKey(t *testing.T) {
 	os.Clearenv()
-	os.Setenv("AWS_ACCESS_KEY_ID", "access")
+	os.Setenv("COS_ACCESS_KEY_ID", "access")
 
 	e := EnvProvider{}
 	creds, err := e.Retrieve()
@@ -57,8 +57,9 @@ func TestEnvProviderNoSecretAccessKey(t *testing.T) {
 
 func TestEnvProviderAlternateNames(t *testing.T) {
 	os.Clearenv()
-	os.Setenv("AWS_ACCESS_KEY", "access")
-	os.Setenv("AWS_SECRET_KEY", "secret")
+	os.Setenv("COS_ACCESS_KEY", "access")
+	os.Setenv("COS_SECRET_KEY", "secret")
+    os.Setenv("COS_APPID", "appid")
 
 	e := EnvProvider{}
 	creds, err := e.Retrieve()
@@ -66,5 +67,5 @@ func TestEnvProviderAlternateNames(t *testing.T) {
 
 	assert.Equal(t, "access", creds.AccessKeyID, "Expected access key ID")
 	assert.Equal(t, "secret", creds.SecretAccessKey, "Expected secret access key")
-	assert.Empty(t, creds.SessionToken, "Expected no token")
+	assert.Equal(t, "appid", creds.AppID, "Expected application ID")
 }

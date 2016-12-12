@@ -88,27 +88,31 @@ func loadProfile(filename, profile string) (Value, error) {
 		return Value{ProviderName: SharedCredsProviderName}, coserr.New("SharedCredsLoad", "failed to get profile", err)
 	}
 
-	id, err := iniProfile.GetKey("aws_access_key_id")
+	id, err := iniProfile.GetKey("cos_access_key_id")
 	if err != nil {
 		return Value{ProviderName: SharedCredsProviderName}, coserr.New("SharedCredsAccessKey",
 			fmt.Sprintf("shared credentials %s in %s did not contain aws_access_key_id", profile, filename),
 			err)
 	}
 
-	secret, err := iniProfile.GetKey("aws_secret_access_key")
+	secret, err := iniProfile.GetKey("cos_secret_access_key")
 	if err != nil {
 		return Value{ProviderName: SharedCredsProviderName}, coserr.New("SharedCredsSecret",
 			fmt.Sprintf("shared credentials %s in %s did not contain aws_secret_access_key", profile, filename),
 			nil)
 	}
 
-	// Default to empty string if not found
-	token := iniProfile.Key("aws_session_token")
+    appid, err := iniProfile.GetKey("cos_appid")
+	if err != nil {
+		return Value{ProviderName: SharedCredsProviderName}, coserr.New("SharedAppID",
+			fmt.Sprintf("shared credentials %s in %s did not contain cos_appid", profile, filename),
+			nil)
+	}
 
 	return Value{
 		AccessKeyID:     id.String(),
 		SecretAccessKey: secret.String(),
-		SessionToken:    token.String(),
+        AppID:           appid.String(),
 		ProviderName:    SharedCredsProviderName,
 	}, nil
 }
@@ -118,7 +122,7 @@ func loadProfile(filename, profile string) (Value, error) {
 // Will return an error if the user's home directory path cannot be found.
 func (p *SharedCredentialsProvider) filename() (string, error) {
 	if p.Filename == "" {
-		if p.Filename = os.Getenv("AWS_SHARED_CREDENTIALS_FILE"); p.Filename != "" {
+		if p.Filename = os.Getenv("COS_SHARED_CREDENTIALS_FILE"); p.Filename != "" {
 			return p.Filename, nil
 		}
 
@@ -130,7 +134,7 @@ func (p *SharedCredentialsProvider) filename() (string, error) {
 			return "", ErrSharedCredentialsHomeNotFound
 		}
 
-		p.Filename = filepath.Join(homeDir, ".aws", "credentials")
+		p.Filename = filepath.Join(homeDir, ".cos", "credentials")
 	}
 
 	return p.Filename, nil
@@ -141,7 +145,7 @@ func (p *SharedCredentialsProvider) filename() (string, error) {
 // return "default".
 func (p *SharedCredentialsProvider) profile() string {
 	if p.Profile == "" {
-		p.Profile = os.Getenv("AWS_PROFILE")
+		p.Profile = os.Getenv("COS_PROFILE")
 	}
 	if p.Profile == "" {
 		p.Profile = "default"

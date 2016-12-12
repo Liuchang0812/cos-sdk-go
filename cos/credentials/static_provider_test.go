@@ -10,7 +10,7 @@ func TestStaticProviderGet(t *testing.T) {
 		Value: Value{
 			AccessKeyID:     "AKID",
 			SecretAccessKey: "SECRET",
-			SessionToken:    "",
+			AppID:    "APPID",
 		},
 	}
 
@@ -18,7 +18,7 @@ func TestStaticProviderGet(t *testing.T) {
 	assert.Nil(t, err, "Expect no error")
 	assert.Equal(t, "AKID", creds.AccessKeyID, "Expect access key ID to match")
 	assert.Equal(t, "SECRET", creds.SecretAccessKey, "Expect secret access key to match")
-	assert.Empty(t, creds.SessionToken, "Expect no session token")
+	assert.Equal(t, "APPID", creds.AppID, "Expect application ID to match")
 }
 
 func TestStaticProviderIsExpired(t *testing.T) {
@@ -26,7 +26,7 @@ func TestStaticProviderIsExpired(t *testing.T) {
 		Value: Value{
 			AccessKeyID:     "AKID",
 			SecretAccessKey: "SECRET",
-			SessionToken:    "",
+			AppID:    "APPID",
 		},
 	}
 

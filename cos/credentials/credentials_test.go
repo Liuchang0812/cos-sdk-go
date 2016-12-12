@@ -27,7 +27,7 @@ func TestCredentialsGet(t *testing.T) {
 		creds: Value{
 			AccessKeyID:     "AKID",
 			SecretAccessKey: "SECRET",
-			SessionToken:    "",
+			AppID:    "APPID",
 		},
 		expired: true,
 	})
@@ -36,7 +36,7 @@ func TestCredentialsGet(t *testing.T) {
 	assert.Nil(t, err, "Expected no error")
 	assert.Equal(t, "AKID", creds.AccessKeyID, "Expect access key ID to match")
 	assert.Equal(t, "SECRET", creds.SecretAccessKey, "Expect secret access key to match")
-	assert.Empty(t, creds.SessionToken, "Expect session token to be empty")
+	assert.Equal(t, "APPID", creds.AppID, "Expect application ID to match")
 }
 
 func TestCredentialsGetWithError(t *testing.T) {

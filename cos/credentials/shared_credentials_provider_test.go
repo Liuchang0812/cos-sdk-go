@@ -17,7 +17,6 @@ func TestSharedCredentialsProvider(t *testing.T) {
 
 	assert.Equal(t, "accessKey", creds.AccessKeyID, "Expect access key ID to match")
 	assert.Equal(t, "secret", creds.SecretAccessKey, "Expect secret access key to match")
-	assert.Equal(t, "token", creds.SessionToken, "Expect session token to match")
 }
 
 func TestSharedCredentialsProviderIsExpired(t *testing.T) {
@@ -35,7 +34,7 @@ func TestSharedCredentialsProviderIsExpired(t *testing.T) {
 
 func TestSharedCredentialsProviderWithAWS_SHARED_CREDENTIALS_FILE(t *testing.T) {
 	os.Clearenv()
-	os.Setenv("AWS_SHARED_CREDENTIALS_FILE", "example.ini")
+	os.Setenv("COS_SHARED_CREDENTIALS_FILE", "example.ini")
 	p := SharedCredentialsProvider{}
 	creds, err := p.Retrieve()
 
@@ -43,26 +42,26 @@ func TestSharedCredentialsProviderWithAWS_SHARED_CREDENTIALS_FILE(t *testing.T) 
 
 	assert.Equal(t, "accessKey", creds.AccessKeyID, "Expect access key ID to match")
 	assert.Equal(t, "secret", creds.SecretAccessKey, "Expect secret access key to match")
-	assert.Equal(t, "token", creds.SessionToken, "Expect session token to match")
+	assert.Equal(t, "appid", creds.AppID, "Expect appid to match")
 }
 
 func TestSharedCredentialsProviderWithAWS_SHARED_CREDENTIALS_FILEAbsPath(t *testing.T) {
 	os.Clearenv()
 	wd, err := os.Getwd()
 	assert.NoError(t, err)
-	os.Setenv("AWS_SHARED_CREDENTIALS_FILE", filepath.Join(wd, "example.ini"))
+	os.Setenv("COS_SHARED_CREDENTIALS_FILE", filepath.Join(wd, "example.ini"))
 	p := SharedCredentialsProvider{}
 	creds, err := p.Retrieve()
 	assert.Nil(t, err, "Expect no error")
 
 	assert.Equal(t, "accessKey", creds.AccessKeyID, "Expect access key ID to match")
 	assert.Equal(t, "secret", creds.SecretAccessKey, "Expect secret access key to match")
-	assert.Equal(t, "token", creds.SessionToken, "Expect session token to match")
+	assert.Equal(t, "appid", creds.AppID, "Expect appid to match")
 }
 
 func TestSharedCredentialsProviderWithAWS_PROFILE(t *testing.T) {
 	os.Clearenv()
-	os.Setenv("AWS_PROFILE", "no_token")
+	os.Setenv("COS_PROFILE", "no_token")
 
 	p := SharedCredentialsProvider{Filename: "example.ini", Profile: ""}
 	creds, err := p.Retrieve()
@@ -70,7 +69,7 @@ func TestSharedCredentialsProviderWithAWS_PROFILE(t *testing.T) {
 
 	assert.Equal(t, "accessKey", creds.AccessKeyID, "Expect access key ID to match")
 	assert.Equal(t, "secret", creds.SecretAccessKey, "Expect secret access key to match")
-	assert.Empty(t, creds.SessionToken, "Expect no token")
+	assert.Equal(t, "appid", creds.AppID, "Expect appid to match")
 }
 
 func TestSharedCredentialsProviderWithoutTokenFromProfile(t *testing.T) {
@@ -82,7 +81,7 @@ func TestSharedCredentialsProviderWithoutTokenFromProfile(t *testing.T) {
 
 	assert.Equal(t, "accessKey", creds.AccessKeyID, "Expect access key ID to match")
 	assert.Equal(t, "secret", creds.SecretAccessKey, "Expect secret access key to match")
-	assert.Empty(t, creds.SessionToken, "Expect no token")
+	assert.Equal(t, "appid", creds.AppID, "Expect appid to match")
 }
 
 func TestSharedCredentialsProviderColonInCredFile(t *testing.T) {
@@ -92,9 +91,9 @@ func TestSharedCredentialsProviderColonInCredFile(t *testing.T) {
 	creds, err := p.Retrieve()
 	assert.Nil(t, err, "Expect no error")
 
+	assert.Equal(t, "appid", creds.AppID, "Expect appid to match")
 	assert.Equal(t, "accessKey", creds.AccessKeyID, "Expect access key ID to match")
 	assert.Equal(t, "secret", creds.SecretAccessKey, "Expect secret access key to match")
-	assert.Empty(t, creds.SessionToken, "Expect no token")
 }
 
 func BenchmarkSharedCredentialsProvider(b *testing.B) {
