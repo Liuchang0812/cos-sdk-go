@@ -22,13 +22,13 @@ type RequestRetryer interface{}
 //
 //     // Create Session with MaxRetry configuration to be shared by multiple
 //     // service clients.
-//     sess, err := session.NewSession(&aws.Config{
-//         MaxRetries: aws.Int(3),
+//     sess, err := session.NewSession(&cos.Config{
+//         MaxRetries: cos.Int(3),
 //     })
 //
-//     // Create S3 service client with a specific Region.
-//     svc := s3.New(sess, &aws.Config{
-//         Region: aws.String("us-west-2"),
+//     // Create cosc service client with a specific Region.
+//     svc := s3.New(sess, &cos.Config{
+//         Region: cos.String("us-west-2"),
 //     })
 type Config struct {
 	// Enables verbose error printing of all credential chain errors.
@@ -58,7 +58,7 @@ type Config struct {
 	// noted. A full list of regions is found in the "Regions and Endpoints"
 	// document.
 	//
-	// @see http://docs.aws.amazon.com/general/latest/gr/rande.html
+	// @see http://docs.cos.amazon.com/general/latest/gr/rande.html
 	//   AWS Regions and Endpoints
 	Region *string
 
@@ -96,7 +96,7 @@ type Config struct {
 	// To set the Retryer field in a type-safe manner and with chaining, use
 	// the request.WithRetryer helper function:
 	//
-	//   cfg := request.WithRetryer(aws.NewConfig(), myRetryer)
+	//   cfg := request.WithRetryer(cos.NewConfig(), myRetryer)
 	//
 	Retryer RequestRetryer
 
@@ -108,14 +108,6 @@ type Config struct {
 	// CRC32 checksums in Amazon DynamoDB.
 	DisableComputeChecksums *bool
 
-	// Set this to `true` to force the request to use path-style addressing,
-	// i.e., `http://s3.amazonaws.com/BUCKET/KEY`. By default, the S3 client
-	// will use virtual hosted bucket addressing when possible
-	// (`http://BUCKET.s3.amazonaws.com/KEY`).
-	//
-	// @note This configuration option is specific to the Amazon S3 service.
-	// @see http://docs.aws.amazon.com/AmazonS3/latest/dev/VirtualHosting.html
-	//   Amazon S3: Virtual Hosting of Buckets
 	ForcePathStyle *bool
 
 	// Set this to `true` to disable the SDK adding the `Expect: 100-Continue`
@@ -124,14 +116,14 @@ type Config struct {
 	// `continue` status. This is useful to prevent sending the request body
 	// until after the request is authenticated, and validated.
 	//
-	// http://docs.aws.amazon.com/AmazonS3/latest/API/RESTObjectPUT.html
+	// http://docs.cos.amazon.com/Amazoncosc/latest/API/RESTObjectPUT.html
 	//
 	// 100-Continue is only enabled for Go 1.6 and above. See `http.Transport`'s
 	// `ExpectContinueTimeout` for information on adjusting the continue wait
 	// timeout. https://golang.org/pkg/net/http/#Transport
 	//
 	// You should use this flag to disble 100-Continue if you experience issues
-	// with proxies or third party S3 compatible services.
+	// with proxies or third party cosc compatible services.
 	Disable100Continue *bool
 
 
@@ -151,28 +143,28 @@ type Config struct {
 	//
 	//     sess, err := session.NewSession()
 	//
-	//     svc := s3.New(sess, &aws.Config{
-	//         UseDualStack: aws.Bool(true),
+	//     svc := s3.New(sess, &cos.Config{
+	//         UseDualStack: cos.Bool(true),
 	//     })
 	UseDualStack *bool
 
 	// SleepDelay is an override for the func the SDK will call when sleeping
 	// during the lifecycle of a request. Specifically this will be used for
 	// request delays. This value should only be used for testing. To adjust
-	// the delay of a request see the aws/client.DefaultRetryer and
-	// aws/request.Retryer.
+	// the delay of a request see the cos/client.DefaultRetryer and
+	// cos/request.Retryer.
 	SleepDelay func(time.Duration)
 
 	// DisableRestProtocolURICleaning will not clean the URL path when making rest protocol requests.
 	// Will default to false. This would only be used for empty directory names in s3 requests.
 	//
 	// Example:
-	//    sess, err := session.NewSession(&aws.Config{DisableRestProtocolURICleaning: aws.Bool(true))
+	//    sess, err := session.NewSession(&cos.Config{DisableRestProtocolURICleaning: cos.Bool(true))
 	//
 	//    svc := s3.New(sess)
 	//    out, err := svc.GetObject(&s3.GetObjectInput {
-	//    	Bucket: aws.String("bucketname"),
-	//    	Key: aws.String("//foo//bar//moo"),
+	//    	Bucket: cos.String("bucketname"),
+	//    	Key: cos.String("//foo//bar//moo"),
 	//    })
 	DisableRestProtocolURICleaning *bool
 }
@@ -182,12 +174,12 @@ type Config struct {
 //
 //     // Create Session with MaxRetry configuration to be shared by multiple
 //     // service clients.
-//     sess, err := session.NewSession(aws.NewConfig().
+//     sess, err := session.NewSession(cos.NewConfig().
 //         WithMaxRetries(3),
 //     )
 //
-//     // Create S3 service client with a specific Region.
-//     svc := s3.New(sess, aws.NewConfig().
+//     // Create cosc service client with a specific Region.
+//     svc := s3.New(sess, cos.NewConfig().
 //         WithRegion("us-west-2"),
 //     )
 func NewConfig() *Config {
@@ -278,17 +270,17 @@ func (c *Config) WithLogger(logger Logger) *Config {
 	return c
 }
 
-// WithS3ForcePathStyle sets a config S3ForcePathStyle value returning a Config
+// WithcoscForcePathStyle sets a config S3ForcePathStyle value returning a Config
 // pointer for chaining.
 func (c *Config) WithForcePathStyle(force bool) *Config {
-	c.S3ForcePathStyle = &force
+	c.coscForcePathStyle = &force
 	return c
 }
 
-// WithS3Disable100Continue sets a config S3Disable100Continue value returning
+// WithcoscDisable100Continue sets a config S3Disable100Continue value returning
 // a Config pointer for chaining.
 func (c *Config) WithDisable100Continue(disable bool) *Config {
-	c.S3Disable100Continue = &disable
+	c.coscDisable100Continue = &disable
 	return c
 }
 
@@ -371,11 +363,11 @@ func mergeInConfig(dst *Config, other *Config) {
 	}
 
 	if other.ForcePathStyle != nil {
-		dst.ForcePathStyle = other.S3ForcePathStyle
+		dst.ForcePathStyle = other.coscForcePathStyle
 	}
 
 	if other.Disable100Continue != nil {
-		dst.Disable100Continue = other.S3Disable100Continue
+		dst.Disable100Continue = other.coscDisable100Continue
 	}
 
 	if other.UseDualStack != nil {
